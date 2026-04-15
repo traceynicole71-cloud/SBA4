@@ -1,17 +1,22 @@
-let tasks = [];
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
 //Get the elements
 const taskNameInput = document.getElementById("taskName");
 const categoryInput = document.getElementById("category");
-const deadlineInput = document.getElementById("deadLine");
+const deadlineInput = document.getElementById("deadline");
 const statusInput = document.getElementById("status");
 const addTaskBtn = document.getElementById("addTaskBtn");
 const taskList = document.getElementById("taskList");
-const filterStatus = document.getElementById("filterSatus");
+const filterStatus = document.getElementById("filterStatus");
 const filterCategory = document.getElementById("filterCategory");
 
 //Add Tasks
-add addTaskBtn.addEventListener("click", function () {
+addTaskBtn.addEventListener("click", function () {
+    if (!taskNameInput.value || !deadlineInput.value) {
+        alert("Enter a new task name and deadline.");
+        return;
+    }
+
     const task = {
         name: taskNameInput.value,
         category: categoryInput.value,
@@ -20,32 +25,32 @@ add addTaskBtn.addEventListener("click", function () {
     };
 
     tasks.push(task);
-
-
+    saveAndDisplay();
     clearInputs();
-    displayTasks();
 });
 
 //Clear the Inputs
 function clearInputs() {
     taskNameInput.value = "";
-    categoryInput.value = "";
+    categoryInput.value = "Work";
     deadlineInput.value = "";
     statusInput.value = "In Progress";
 }
 
-//Displaying the Tasks
+//Save to Local Storage and Refresh List
+function saveAndDisplay() {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+    displayTasks();
+}
+
+//Display the Tasks
 function displayTasks() {
     taskList.innerHTML = "";
 
-    let filteredTasks == tasks.filter(task => {
-        const statusMatch = 
-        filterStatus.value == "All" || task.status === filterStatus.value;
-
-        const categoryMatch = 
-        filterCategory.value === "" ||
-        task.category.toLowerCase().includes(filterCategory.value.toLowerCase());
-
+    let filteredTasks = tasks.filter(task => {
+        const statusMatch = filterStatus.value == "All" || task.status === filterStatus.value;
+        const categoryMatch = filterCategory.value === "" ||
+            task.category.toLowerCase().includes(filterCategory.value.toLowerCase());
         return statusMatch && categoryMatch;
     });
 
@@ -53,15 +58,15 @@ function displayTasks() {
         checkOverdue(task);
 
         const li = document.createElement("li");
-        li.classList.add("task");
+        li.classList = "task";
 
-        if (task.status === "Overdue") {
-            li.classList.add("overdue");
-        } else of (task.status === "Completed") {
-            li.classList.add("Completed");
-        }
-        
-        li.innerHTML =  `
+        if (task.status === "Overdue")  {
+            li.status.color = "red";
+    } else if (task.status === "Completed") {
+        li.style.textDecoration = "line-through";
+    }
+
+        li.innerHTML = `
         <strong>${task.name}</strong><br>
         Category: ${task.category}<br>
         Deadline: ${task.deadLine}<br>
@@ -75,15 +80,16 @@ function displayTasks() {
     });
 
     //Update the Status
-    function updateStatus(index, newStatus){
+    window.updateStatus = function (index, newStatus) {
         tasks[index].status = newStatus;
-displayTasks();
-    }
+        displayTasks();
+    };
 
     //Check for Overdue Status
     function checkOverdue(task) {
-        const today = newDate();
-        const deadline = newDate(task.deadline);
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        const deadline = new Date(task.deadline);
 
         if (task.status !== "Completed" && deadline < today) {
             task.status = "Overdue";
@@ -93,3 +99,5 @@ displayTasks();
     filterStatus.addEventListener("change", displayTasks);
     filterCategory.addEventListener("input", displayTasks);
 
+    //Load
+    displayTasks()};
