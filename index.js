@@ -61,7 +61,7 @@ function displayTasks() {
         li.classList = "task";
 
         if (task.status === "Overdue")  {
-            li.status.color = "red";
+            li.style.color = "red";
     } else if (task.status === "Completed") {
         li.style.textDecoration = "line-through";
     }
@@ -69,20 +69,21 @@ function displayTasks() {
         li.innerHTML = `
         <strong>${task.name}</strong><br>
         Category: ${task.category}<br>
-        Deadline: ${task.deadLine}<br>
+        Deadline: ${task.deadline}<br>
         Status:
         <select onchange="updateStatus(${index}, this.value)">
         <option value="In Progress" ${task.status === "In Progress" ? "selected" : ""}>In Progress</option>
-        <option value="Completed" ${task.status === "completed" ? "selected" : ""}>Completed</option>
+        <option value="Completed" ${task.status === "Completed" ? "selected" : ""}>Completed</option>
+        <option value="Overdue" ${task.status === "Overdue" ? "selected" : ""}>Overdue</option>
         </select>
         `;
         taskList.appendChild(li);
     });
-
+}
     //Update the Status
     window.updateStatus = function (index, newStatus) {
         tasks[index].status = newStatus;
-        displayTasks();
+        saveAndDisplay();
     };
 
     //Check for Overdue Status
@@ -100,4 +101,4 @@ function displayTasks() {
     filterCategory.addEventListener("input", displayTasks);
 
     //Load
-    displayTasks()};
+    displayTasks();
